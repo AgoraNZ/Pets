@@ -7,21 +7,26 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* Base Reset & Theme Colors */
+    /* Base Reset & Theme */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Roboto', sans-serif; background: #f4f1e9; color: #333; }
     a { text-decoration: none; color: inherit; }
-    /* Theme Colors */
+    
+    /* Theme Colors (earthy, woodland) */
     :root {
-      --primary: #2c5f2d; /* deep forest green */
-      --secondary: #8b9a46; /* earthy olive */
-      --accent: #a3b18a; /* soft green-gray */
+      --primary: #5c4033;  /* Dark wood */
+      --secondary: #8b9a46; /* Earthy olive */
+      --accent: #a3b18a; /* Soft, natural green */
       --bg: #f4f1e9;
     }
     
-    /* Header & Navigation */
+    /* Header with wood texture */
     header {
-      background: var(--primary);
+      background: 
+        linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url('https://images.unsplash.com/photo-1506748686214-e9df14d4d9d0?auto=format&fit=crop&w=1200&h=200');
+      background-size: cover;
+      background-position: center;
       color: #fff;
       padding: 10px 20px;
       display: flex;
@@ -40,12 +45,13 @@
     }
     nav a:hover, nav button:hover { text-decoration: underline; }
     
-    /* Slider */
+    /* Slider Section */
     .slider {
       position: relative;
       width: 100%;
       height: 400px;
       overflow: hidden;
+      margin-bottom: 20px;
     }
     .slider .slide {
       position: absolute;
@@ -53,6 +59,7 @@
       height: 100%;
       opacity: 0;
       transition: opacity 1s ease-in-out;
+      cursor: pointer;
     }
     .slider .slide.active { opacity: 1; }
     .slider .slide img {
@@ -60,14 +67,26 @@
       height: 100%;
       object-fit: cover;
     }
+    /* Category overlay text on slider */
+    .slide .overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      padding: 8px 12px;
+      background: rgba(0,0,0,0.5);
+      color: #fff;
+      font-size: 1.2em;
+      border-radius: 4px;
+    }
     
     /* Category Menu & View Toggle */
     #categoryMenu {
-      margin: 20px 0;
+      margin: 10px 0;
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
       align-items: center;
+      justify-content: center;
     }
     #categoryMenu button {
       padding: 8px 12px;
@@ -97,7 +116,7 @@
       color: #fff;
     }
     
-    /* Listings Grid & List */
+    /* Listings Grid & List Styles */
     .listing-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -126,9 +145,8 @@
       object-fit: cover;
       flex-shrink: 0;
     }
-    .listing-list .listing-info {
-      padding: 15px;
-    }
+    .listing-list .listing-info { padding: 15px; }
+    
     /* Common Listing Card Styles */
     .listing-card {
       background: #fff;
@@ -145,15 +163,13 @@
       height: 200px;
       object-fit: cover;
     }
-    .listing-info {
-      padding: 15px;
-    }
+    .listing-info { padding: 15px; }
     .listing-info h3 { font-size: 1.2em; margin-bottom: 8px; }
     .listing-info p { font-size: 0.9em; line-height: 1.4; }
     .listing-info .price { color: var(--primary); font-weight: bold; margin-top: 10px; }
     .listing-info .seller { font-style: italic; margin-top: 5px; font-size: 0.85em; }
     
-    /* Modal Overlay */
+    /* Modal Overlay for Detail & Question */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0;
@@ -186,7 +202,7 @@
     }
     .modal-close:hover { background: var(--secondary); }
     
-    /* Detail Page */
+    /* Detail Modal Content */
     .detail-image {
       width: 100%;
       height: 400px;
@@ -237,19 +253,23 @@
     </nav>
   </header>
   
-  <!-- Slider Section -->
+  <!-- Slider Section with clickable category images -->
   <div class="slider" id="slider">
-    <div class="slide active">
-      <img src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=1200&h=400" alt="Golden Retriever">
+    <div class="slide active" onclick="setCategory('Dogs'); window.location.hash='#home';">
+      <img src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=1200&h=400" alt="Dogs">
+      <div class="overlay">Dogs</div>
     </div>
-    <div class="slide">
-      <img src="https://images.unsplash.com/photo-1576774431041-4b52378a4ffb?auto=format&fit=crop&w=1200&h=400" alt="Labrador Retriever">
+    <div class="slide" onclick="setCategory('Cats'); window.location.hash='#home';">
+      <img src="https://images.unsplash.com/photo-1601758124327-2b3bdb1b45b4?auto=format&fit=crop&w=1200&h=400" alt="Cats">
+      <div class="overlay">Cats</div>
     </div>
-    <div class="slide">
-      <img src="https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&w=1200&h=400" alt="Siamese Cat">
+    <div class="slide" onclick="setCategory('Rabbits'); window.location.hash='#home';">
+      <img src="https://images.unsplash.com/photo-1589923188900-3ef4b8bb110b?auto=format&fit=crop&w=1200&h=400" alt="Rabbits">
+      <div class="overlay">Rabbits</div>
     </div>
-    <div class="slide">
-      <img src="https://images.unsplash.com/photo-1575404083516-24d5cebd4e7e?auto=format&fit=crop&w=1200&h=400" alt="British Shorthair">
+    <div class="slide" onclick="setCategory('Guinea Pigs'); window.location.hash='#home';">
+      <img src="https://images.unsplash.com/photo-1581306503942-7a81f23f1a50?auto=format&fit=crop&w=1200&h=400" alt="Guinea Pigs">
+      <div class="overlay">Guinea Pigs</div>
     </div>
   </div>
   
@@ -269,7 +289,7 @@
   <div class="modal-overlay" id="detailModal">
     <div class="modal-content" id="detailContent">
       <button class="modal-close" id="detailClose">Close</button>
-      <!-- Detail content gets injected here -->
+      <!-- Detail content will be injected here -->
     </div>
   </div>
   
@@ -288,8 +308,8 @@
   <script>
     // Global variables for category filter and view mode
     let currentCategory = "All";
-    let viewMode = "grid"; // options: "grid" or "list"
-    let currentDetail; // holds current listing detail for use in question modal
+    let viewMode = "grid"; // "grid" or "list"
+    let currentDetail = {}; // holds current listing details for question modal
     
     // --- Slider Functionality ---
     const slides = document.querySelectorAll('.slide');
@@ -300,7 +320,7 @@
       slides[currentSlide].classList.add('active');
     }, 4000);
     
-    // --- LocalStorage Persistence Functions ---
+    // --- LocalStorage Functions ---
     function getUsers() {
       return JSON.parse(localStorage.getItem("users") || "[]");
     }
@@ -357,7 +377,6 @@
       } else if (hash === "#upload") {
         renderUpload();
       } else {
-        // For modals, we do not change content as they are separate
         content.innerHTML = "<p>Page not found.</p>";
       }
     }
@@ -499,7 +518,6 @@
           location: e.target.location.value,
           listingNumber: "Listing #" + Math.floor(Math.random()*10000000000),
           sellerId: currentUser.id,
-          // Use a fixed Unsplash URL based on type; you may adjust per listing.
           image: getDefaultImage(e.target.type.value)
         };
         const pets = getPets();
@@ -566,12 +584,11 @@
       }
       const users = getUsers();
       const seller = users.find(u => u.id === pet.sellerId) || { username: "Saskia's Ark" };
-      // For larger image, if URL contains width/height parameters, modify them
+      // Adjust image for larger display if possible
       let largeImage = pet.image;
       if(largeImage.indexOf("w=300") !== -1) {
         largeImage = largeImage.replace("w=300", "w=800").replace("h=200", "h=400");
       }
-      // Save current detail for use in Ask Question modal
       currentDetail = { seller: seller.username, petTitle: pet.title };
       const detailHTML = `
         <img class="detail-image" src="${largeImage}" alt="${pet.title}">
@@ -585,7 +602,7 @@
         <div class="detail-info"><p><strong>Listing Number:</strong> ${pet.listingNumber}</p></div>
         <div class="detail-info"><p class="seller"><strong>Seller:</strong> ${seller.username}</p></div>
         <button class="ask-btn" onclick="openQuestionModal()">Ask Seller a Question</button>
-        <p><button class="ask-btn" onclick="closeDetailModal()">Back to Listings</button></p>
+        <button class="ask-btn" onclick="closeDetailModal()">Back to Listings</button>
       `;
       openDetailModal(detailHTML);
     }
@@ -601,7 +618,7 @@
     document.getElementById("questionClose").addEventListener("click", () => {
       document.getElementById("questionModal").style.display = "none";
     });
-    document.getElementById("questionForm")?.addEventListener("submit", (e) => {
+    document.getElementById("questionForm").addEventListener("submit", function(e) {
       e.preventDefault();
       const question = e.target.question.value;
       if (question) {
@@ -610,351 +627,6 @@
         document.getElementById("questionModal").style.display = "none";
       }
     });
-    // If questionForm is not yet in DOM, add listener when created
-    function bindQuestionForm() {
-      const qForm = document.getElementById("questionForm");
-      if(qForm) {
-        qForm.addEventListener("submit", (e) => {
-          e.preventDefault();
-          const question = e.target.question.value;
-          if (question) {
-            alert("Your question has been sent to " + currentDetail.seller + " regarding " + currentDetail.petTitle + ":\n\n" + question);
-            e.target.question.value = "";
-            document.getElementById("questionModal").style.display = "none";
-          }
-        });
-      }
-    }
-    
-    // --- Default Image Selector based on Type ---
-    function getDefaultImage(type) {
-      type = type.toLowerCase();
-      if(type.includes("dog")) {
-        return "https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=300&h=200";
-      } else if(type.includes("labrador")) {
-        return "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=300&h=200";
-      } else if(type.includes("cat")) {
-        return "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&w=300&h=200";
-      } else if(type.includes("rabbit")) {
-        return "https://images.unsplash.com/photo-1589923188900-3ef4b8bb110b?auto=format&fit=crop&w=300&h=200";
-      } else if(type.includes("guinea")) {
-        return "https://images.unsplash.com/photo-1581306503942-7a81f23f1a50?auto=format&fit=crop&w=300&h=200";
-      }
-      return "https://source.unsplash.com/featured/300x200/?" + encodeURIComponent(type);
-    }
-    
-    // --- Pre-populate 20 Sample Listings (if none exist) ---
-    function populateSampleListings() {
-      if(getPets().length > 0) return; // Do not overwrite existing listings
-      const sampleListings = [
-        {
-          id: generateId(),
-          title: "Golden Retriever",
-          type: "Dog",
-          breed: "Golden Retriever",
-          age: 3,
-          description: "Friendly, loyal and energetic. A perfect family companion.",
-          price: 600,
-          location: "Auckland",
-          listingNumber: "Listing #5223175989",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1560807707-8cc77767d783?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Labrador Retriever",
-          type: "Dog",
-          breed: "Labrador Retriever",
-          age: 4,
-          description: "A playful and loving Labrador ready for a new home.",
-          price: 650,
-          location: "Auckland",
-          listingNumber: "Listing #5223175990",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1518717758536-85ae29035b6d?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Siamese Cat",
-          type: "Cat",
-          breed: "Siamese",
-          age: 2,
-          description: "Elegant and vocal, this Siamese cat is a charming companion.",
-          price: 300,
-          location: "Auckland",
-          listingNumber: "Listing #5223175991",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Persian Cat",
-          type: "Cat",
-          breed: "Persian",
-          age: 3,
-          description: "Fluffy and affectionate with a regal demeanor.",
-          price: 350,
-          location: "Auckland",
-          listingNumber: "Listing #5223175992",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1594479571575-fd08d3b52a74?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "British Shorthair",
-          type: "Cat",
-          breed: "British Shorthair",
-          age: 3,
-          description: "Calm and affectionate with a plush, dense coat.",
-          price: 320,
-          location: "Auckland",
-          listingNumber: "Listing #5223175993",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1575404083516-24d5cebd4e7e?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Rex Rabbit",
-          type: "Rabbit",
-          breed: "Rex",
-          age: 1,
-          description: "Soft-furred and gentle, ideal for petting.",
-          price: 90,
-          location: "Auckland",
-          listingNumber: "Listing #5223175994",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1589923188900-3ef4b8bb110b?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Lop Rabbit",
-          type: "Rabbit",
-          breed: "Lop",
-          age: 1,
-          description: "Adorable lop-eared rabbit with a sweet temperament.",
-          price: 85,
-          location: "Auckland",
-          listingNumber: "Listing #5223175995",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1612817150060-6ec8cc4d89e4?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Netherland Dwarf Guinea Pig",
-          type: "Guinea Pig",
-          breed: "Netherland Dwarf",
-          age: 1,
-          description: "Small, energetic and perfect for a first pet.",
-          price: 45,
-          location: "Auckland",
-          listingNumber: "Listing #5223175996",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1581306503942-7a81f23f1a50?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "American Guinea Pig",
-          type: "Guinea Pig",
-          breed: "American",
-          age: 1,
-          description: "Friendly and cuddly with a soft coat.",
-          price: 50,
-          location: "Auckland",
-          listingNumber: "Listing #5223175997",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1581306503942-7a81f23f1a51?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Border Collie",
-          type: "Dog",
-          breed: "Border Collie",
-          age: 2,
-          description: "Intelligent and energetic—ideal for active families.",
-          price: 500,
-          location: "Auckland",
-          listingNumber: "Listing #5223175998",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1598133894002-28390ff9e888?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Bulldog",
-          type: "Dog",
-          breed: "Bulldog",
-          age: 3,
-          description: "Strong and gentle with a unique, charming personality.",
-          price: 450,
-          location: "Auckland",
-          listingNumber: "Listing #5223175999",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1583511655612-b72f8a3f6e9a?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Maine Coon",
-          type: "Cat",
-          breed: "Maine Coon",
-          age: 4,
-          description: "Large, majestic and very friendly.",
-          price: 400,
-          location: "Auckland",
-          listingNumber: "Listing #5223176000",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1570022188261-9088f7c03eb4?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Sphynx Cat",
-          type: "Cat",
-          breed: "Sphynx",
-          age: 2,
-          description: "Unique, affectionate and with a striking appearance.",
-          price: 380,
-          location: "Auckland",
-          listingNumber: "Listing #5223176001",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1592194996308-6b43878e84a6?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Beagle",
-          type: "Dog",
-          breed: "Beagle",
-          age: 3,
-          description: "Small, energetic and known for its friendly nature.",
-          price: 320,
-          location: "Auckland",
-          listingNumber: "Listing #5223176002",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "German Shepherd",
-          type: "Dog",
-          breed: "German Shepherd",
-          age: 4,
-          description: "Loyal, protective and intelligent—a true working dog.",
-          price: 550,
-          location: "Auckland",
-          listingNumber: "Listing #5223176003",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1568572933382-74d440642117?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Abyssinian Cat",
-          type: "Cat",
-          breed: "Abyssinian",
-          age: 3,
-          description: "Active, playful and with a striking coat pattern.",
-          price: 330,
-          location: "Auckland",
-          listingNumber: "Listing #5223176004",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1583336660823-19f1218b3b2e?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Dutch Rabbit",
-          type: "Rabbit",
-          breed: "Dutch",
-          age: 1,
-          description: "Distinctive markings and a gentle, curious nature.",
-          price: 95,
-          location: "Auckland",
-          listingNumber: "Listing #5223176005",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1598511728255-42cf1fbb1c80?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Flemish Giant Rabbit",
-          type: "Rabbit",
-          breed: "Flemish Giant",
-          age: 2,
-          description: "Huge and gentle—needs plenty of space to roam.",
-          price: 120,
-          location: "Auckland",
-          listingNumber: "Listing #5223176006",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1601758125000-2e3bdb1b45f5?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Crested Guinea Pig",
-          type: "Guinea Pig",
-          breed: "Crested",
-          age: 1,
-          description: "Active and with a distinctive crest of hair.",
-          price: 55,
-          location: "Auckland",
-          listingNumber: "Listing #5223176007",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1610917629300-d3cc35647b7a?auto=format&fit=crop&w=300&h=200"
-        },
-        {
-          id: generateId(),
-          title: "Dwarf Rabbit",
-          type: "Rabbit",
-          breed: "Dwarf",
-          age: 1,
-          description: "Compact and adorable with a lively personality.",
-          price: 80,
-          location: "Auckland",
-          listingNumber: "Listing #5223176008",
-          sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1601758125100-2e3bdb1b45f6?auto=format&fit=crop&w=300&h=200"
-        }
-      ];
-      savePets(sampleListings);
-    }
-    
-    // Render listings based on currentCategory and viewMode
-    function renderListings() {
-      populateSampleListings();
-      const listings = getPets().filter(listing => {
-        if (currentCategory === "All") return true;
-        if (currentCategory === "Dogs") return listing.type.toLowerCase() === "dog";
-        if (currentCategory === "Cats") return listing.type.toLowerCase() === "cat";
-        if (currentCategory === "Rabbits") return listing.type.toLowerCase() === "rabbit";
-        if (currentCategory === "Guinea Pigs") return listing.type.toLowerCase() === "guinea pig";
-        return true;
-      });
-      const container = document.getElementById("listingsContainer");
-      container.innerHTML = "";
-      container.className = viewMode === "grid" ? "listing-grid" : "listing-list";
-      listings.forEach(listing => {
-        const card = document.createElement("div");
-        card.className = "listing-card";
-        if(viewMode === "grid"){
-          card.innerHTML = `
-            <img src="${listing.image}" alt="${listing.title}">
-            <div class="listing-info">
-              <h3>${listing.title}</h3>
-              <p>${listing.description}</p>
-              <p class="price">\$${listing.price}</p>
-              <p class="seller">Seller: Saskia's Ark</p>
-            </div>
-          `;
-        } else {
-          card.innerHTML = `
-            <img src="${listing.image}" alt="${listing.title}">
-            <div class="listing-info">
-              <h3>${listing.title}</h3>
-              <p>${listing.description}</p>
-              <p class="price">\$${listing.price}</p>
-              <p class="seller">Seller: Saskia's Ark</p>
-            </div>
-          `;
-        }
-        card.addEventListener("click", () => {
-          renderPetDetail(listing.id);
-        });
-        container.appendChild(card);
-      });
-    }
     
     // --- Default Image Selector based on Type ---
     function getDefaultImage(type) {
