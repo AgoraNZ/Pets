@@ -7,7 +7,7 @@
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* Reset & base styles */
+    /* Base styles */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Roboto', sans-serif; background: #f2f2f2; color: #333; }
     a { text-decoration: none; color: inherit; }
@@ -31,7 +31,7 @@
       cursor: pointer;
       font-size: 1em;
     }
-    nav button:hover, nav a:hover { text-decoration: underline; }
+    nav a:hover, nav button:hover { text-decoration: underline; }
     
     /* Slider */
     .slider {
@@ -53,7 +53,7 @@
     /* Main content */
     main { padding: 20px; }
     
-    /* Listing Grid */
+    /* Listings Grid */
     .listing-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -66,6 +66,7 @@
       border-radius: 4px;
       overflow: hidden;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      cursor: pointer;
       transition: transform 0.3s;
     }
     .listing-card:hover { transform: translateY(-5px); }
@@ -89,6 +90,34 @@
       margin-top: 5px;
       font-size: 0.85em;
     }
+    
+    /* Detail Page */
+    .detail-container {
+      background: #fff;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      animation: fadeIn 0.5s;
+    }
+    .detail-image {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+    .ask-btn {
+      background: #0073e6;
+      color: #fff;
+      border: none;
+      padding: 10px 15px;
+      font-size: 1em;
+      cursor: pointer;
+      border-radius: 3px;
+      margin-top: 15px;
+    }
+    .ask-btn:hover { background: #005bb5; }
     
     /* Footer */
     footer {
@@ -122,10 +151,18 @@
   
   <!-- Slider Section -->
   <div class="slider" id="slider">
-    <div class="slide active"><img src="https://picsum.photos/seed/slider1/1200/400" alt="Featured Animal 1"></div>
-    <div class="slide"><img src="https://picsum.photos/seed/slider2/1200/400" alt="Featured Animal 2"></div>
-    <div class="slide"><img src="https://picsum.photos/seed/slider3/1200/400" alt="Featured Animal 3"></div>
-    <div class="slide"><img src="https://picsum.photos/seed/slider4/1200/400" alt="Featured Animal 4"></div>
+    <div class="slide active">
+      <img src="https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=1200&h=400" alt="Golden Retriever">
+    </div>
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1573694847310-c0f7bb1aa744?auto=format&fit=crop&w=1200&h=400" alt="Labrador Retriever">
+    </div>
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&w=1200&h=400" alt="Siamese Cat">
+    </div>
+    <div class="slide">
+      <img src="https://images.unsplash.com/photo-1560114924-ef19c34a30c3?auto=format&fit=crop&w=1200&h=400" alt="British Shorthair">
+    </div>
   </div>
   
   <main>
@@ -148,7 +185,7 @@
       slides[currentSlide].classList.add('active');
     }, 4000);
     
-    // --- LocalStorage Persistence ---
+    // --- LocalStorage Persistence Functions ---
     function getUsers() {
       return JSON.parse(localStorage.getItem("users") || "[]");
     }
@@ -211,7 +248,6 @@
         content.innerHTML = "<p>Page not found.</p>";
       }
     }
-    
     window.addEventListener("hashchange", render);
     
     // --- Views ---
@@ -297,12 +333,13 @@
       content.innerHTML = `
         <h2>Sell a Pet</h2>
         <form id="sellForm">
-          <label>Name: <input type="text" name="name" required></label>
+          <label>Title: <input type="text" name="title" required></label>
           <label>Type: <input type="text" name="type" required></label>
           <label>Breed: <input type="text" name="breed"></label>
           <label>Age: <input type="number" name="age"></label>
           <label>Description:<br><textarea name="description"></textarea></label>
           <label>Price: <input type="number" name="price" required></label>
+          <!-- For simplicity, seller image is pre-populated in sample listings -->
           <button type="submit">Create Listing</button>
         </form>
         <div id="sellError" style="color:red;"></div>
@@ -311,13 +348,14 @@
         e.preventDefault();
         const pet = {
           id: generateId(),
-          name: e.target.name.value,
+          title: e.target.title.value,
           type: e.target.type.value,
           breed: e.target.breed.value,
           age: e.target.age.value,
           description: e.target.description.value,
           price: e.target.price.value,
-          sellerId: currentUser.id
+          sellerId: currentUser.id,
+          image: "https://source.unsplash.com/random/300x200" // fallback image
         };
         const pets = getPets();
         pets.push(pet);
@@ -368,55 +406,266 @@
       const pets = getPets();
       const pet = pets.find(p => p.id === petId);
       if (!pet) {
-        content.innerHTML = "<p>Pet not found.</p>";
+        content.innerHTML = "<p>Listing not found.</p>";
         return;
       }
       const users = getUsers();
-      const seller = users.find(u => u.id === pet.sellerId);
+      const seller = users.find(u => u.id === pet.sellerId) || { username: "Sample Seller" };
       content.innerHTML = `
-        <h2>${pet.name}</h2>
-        <p><strong>Type:</strong> ${pet.type}</p>
-        <p><strong>Breed:</strong> ${pet.breed}</p>
-        <p><strong>Age:</strong> ${pet.age}</p>
-        <p><strong>Description:</strong> ${pet.description}</p>
-        <p class="price"><strong>Price:</strong> \$${pet.price}</p>
-        <p class="seller"><strong>Seller:</strong> ${seller ? seller.username : "Unknown"}</p>
-        ${seller && seller.superBuyer && seller.propertyPhoto ? `<img src="${seller.propertyPhoto}" alt="Seller Property">` : ''}
-        <p><a href="#home">Back to Listings</a></p>
+        <div class="detail-container">
+          <img class="detail-image" src="${pet.image || 'https://source.unsplash.com/featured/800x400/?'+pet.type}" alt="${pet.title}">
+          <h2>${pet.title}</h2>
+          <p><strong>Type:</strong> ${pet.type}</p>
+          <p><strong>Breed:</strong> ${pet.breed}</p>
+          <p><strong>Age:</strong> ${pet.age}</p>
+          <p><strong>Description:</strong> ${pet.description}</p>
+          <p class="price"><strong>Price:</strong> \$${pet.price}</p>
+          <p class="seller"><strong>Seller:</strong> ${seller.username}</p>
+          <button class="ask-btn" onclick="askSeller('${seller.username}')">Ask Seller a Question</button>
+          <p><a href="#home">Back to Listings</a></p>
+        </div>
       `;
+    }
+    
+    // Simulate asking seller a question
+    function askSeller(sellerName) {
+      const question = prompt("Enter your question for " + sellerName + ":");
+      if (question) {
+        alert("Your question has been sent to " + sellerName + ":\n\n" + question);
+      }
     }
     
     // --- Pre-populate 20 Sample Listings (if none exist) ---
     function populateSampleListings() {
       if(getPets().length > 0) return; // Do not overwrite existing listings
       const sampleListings = [
-        { id: generateId(), title: "Adorable Siamese Cat", type: "Cat", breed: "Siamese", age: 2, description: "A friendly Siamese cat looking for a loving home.", price: 150, sellerId: "sample1", image: "https://picsum.photos/seed/cat1/300/200" },
-        { id: generateId(), title: "Playful Persian Cat", type: "Cat", breed: "Persian", age: 3, description: "Fluffy and affectionate, great companion.", price: 200, sellerId: "sample2", image: "https://picsum.photos/seed/cat2/300/200" },
-        { id: generateId(), title: "Golden Retriever", type: "Dog", breed: "Golden Retriever", age: 4, description: "Loyal and friendly, perfect for families.", price: 500, sellerId: "sample3", image: "https://picsum.photos/seed/dog1/300/200" },
-        { id: generateId(), title: "Charming Bulldog", type: "Dog", breed: "Bulldog", age: 3, description: "Strong and charming, a wonderful pet.", price: 450, sellerId: "sample4", image: "https://picsum.photos/seed/dog2/300/200" },
-        { id: generateId(), title: "Cute Lop Rabbit", type: "Rabbit", breed: "Lop", age: 1, description: "Adorable lop-eared rabbit, perfect for small spaces.", price: 80, sellerId: "sample5", image: "https://picsum.photos/seed/rabbit1/300/200" },
-        { id: generateId(), title: "White Netherland Dwarf", type: "Rabbit", breed: "Netherland Dwarf", age: 1, description: "Small and cuddly dwarf rabbit, very playful.", price: 90, sellerId: "sample6", image: "https://picsum.photos/seed/rabbit2/300/200" },
-        { id: generateId(), title: "Friendly Guinea Pig", type: "Guinea Pig", breed: "American", age: 1, description: "Sociable and gentle, ideal for kids.", price: 40, sellerId: "sample7", image: "https://picsum.photos/seed/guineapig1/300/200" },
-        { id: generateId(), title: "Speckled Guinea Pig", type: "Guinea Pig", breed: "Abyssinian", age: 1, description: "Colorful and active, a delightful pet.", price: 45, sellerId: "sample8", image: "https://picsum.photos/seed/guineapig2/300/200" },
-        { id: generateId(), title: "Majestic Maine Coon Cat", type: "Cat", breed: "Maine Coon", age: 4, description: "Large and majestic, with a gentle nature.", price: 300, sellerId: "sample9", image: "https://picsum.photos/seed/cat3/300/200" },
-        { id: generateId(), title: "British Shorthair", type: "Cat", breed: "British Shorthair", age: 3, description: "Calm and affectionate, ideal indoor pet.", price: 250, sellerId: "sample10", image: "https://picsum.photos/seed/cat4/300/200" },
-        { id: generateId(), title: "Energetic Border Collie", type: "Dog", breed: "Border Collie", age: 2, description: "Smart and energetic, perfect for active owners.", price: 400, sellerId: "sample11", image: "https://picsum.photos/seed/dog3/300/200" },
-        { id: generateId(), title: "Elegant Poodle", type: "Dog", breed: "Poodle", age: 3, description: "Elegant and friendly, low-shedding coat.", price: 350, sellerId: "sample12", image: "https://picsum.photos/seed/dog4/300/200" },
-        { id: generateId(), title: "Charming Dutch Rabbit", type: "Rabbit", breed: "Dutch", age: 1, description: "Distinctive markings, great temperament.", price: 85, sellerId: "sample13", image: "https://picsum.photos/seed/rabbit3/300/200" },
-        { id: generateId(), title: "Flemish Giant Rabbit", type: "Rabbit", breed: "Flemish Giant", age: 2, description: "Large and gentle giant, needs space to roam.", price: 120, sellerId: "sample14", image: "https://picsum.photos/seed/rabbit4/300/200" },
-        { id: generateId(), title: "Active Abyssinian Cat", type: "Cat", breed: "Abyssinian", age: 3, description: "Active and curious, loves to explore.", price: 220, sellerId: "sample15", image: "https://picsum.photos/seed/cat5/300/200" },
-        { id: generateId(), title: "Loyal German Shepherd", type: "Dog", breed: "German Shepherd", age: 4, description: "Protective and intelligent, excellent guard dog.", price: 550, sellerId: "sample16", image: "https://picsum.photos/seed/dog5/300/200" },
-        { id: generateId(), title: "Unique Sphynx Cat", type: "Cat", breed: "Sphynx", age: 2, description: "Affectionate and distinctive, hairless beauty.", price: 280, sellerId: "sample17", image: "https://picsum.photos/seed/cat6/300/200" },
-        { id: generateId(), title: "Friendly Beagle", type: "Dog", breed: "Beagle", age: 3, description: "Small, energetic, with a keen sense of smell.", price: 300, sellerId: "sample18", image: "https://picsum.photos/seed/dog6/300/200" },
-        { id: generateId(), title: "Graceful Peruvian Inca Orchid", type: "Cat", breed: "Inca Orchid", age: 3, description: "Graceful and elegant, a rare breed.", price: 260, sellerId: "sample19", image: "https://picsum.photos/seed/cat7/300/200" },
-        { id: generateId(), title: "Robust Guinea Pig", type: "Guinea Pig", breed: "Crested", age: 1, description: "Healthy and playful, a fun companion.", price: 50, sellerId: "sample20", image: "https://picsum.photos/seed/guineapig3/300/200" }
+        {
+          id: generateId(),
+          title: "Golden Retriever",
+          type: "Dog",
+          breed: "Golden Retriever",
+          age: 3,
+          description: "Friendly, loyal and energetic. Perfect for families.",
+          price: 600,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Labrador Retriever",
+          type: "Dog",
+          breed: "Labrador",
+          age: 4,
+          description: "Labrador with a playful spirit and gentle nature.",
+          price: 650,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1573694847310-c0f7bb1aa744?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Siamese Cat",
+          type: "Cat",
+          breed: "Siamese",
+          age: 2,
+          description: "Elegant and talkative, a charming companion.",
+          price: 300,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Persian Cat",
+          type: "Cat",
+          breed: "Persian",
+          age: 3,
+          description: "Fluffy, calm, and affectionate—ideal for indoor living.",
+          price: 350,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1601758124327-2b3bdb1b45b4?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "British Shorthair",
+          type: "Cat",
+          breed: "British Shorthair",
+          age: 3,
+          description: "Calm, loyal and independent with a plush coat.",
+          price: 320,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1560114924-ef19c34a30c3?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Rex Rabbit",
+          type: "Rabbit",
+          breed: "Rex",
+          age: 1,
+          description: "Soft and cuddly, perfect for petting and playtime.",
+          price: 90,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1598511728182-27d7f90345f9?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Lop Rabbit",
+          type: "Rabbit",
+          breed: "Lop",
+          age: 1,
+          description: "Adorable lop-eared rabbit with a sweet temperament.",
+          price: 85,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1612817150060-6ec8cc4d89e4?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Netherland Dwarf Guinea Pig",
+          type: "Guinea Pig",
+          breed: "Netherland Dwarf",
+          age: 1,
+          description: "Small, energetic and perfect for first-time owners.",
+          price: 45,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1610917629193-b3cc35647b5e?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "American Guinea Pig",
+          type: "Guinea Pig",
+          breed: "American",
+          age: 1,
+          description: "Friendly and curious with a soft, cuddly coat.",
+          price: 50,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1610917629200-c3cc35647b6f?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Border Collie",
+          type: "Dog",
+          breed: "Border Collie",
+          age: 2,
+          description: "Smart, energetic and ideal for active families.",
+          price: 500,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1598133894002-28390ff9e888?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Bulldog",
+          type: "Dog",
+          breed: "Bulldog",
+          age: 3,
+          description: "Strong, gentle and with a distinctive personality.",
+          price: 450,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1583511655612-b72f8a3f6e9a?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Maine Coon",
+          type: "Cat",
+          breed: "Maine Coon",
+          age: 4,
+          description: "Large, majestic and known for its friendly nature.",
+          price: 400,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1592194996308-5b43878e84a6?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Sphynx Cat",
+          type: "Cat",
+          breed: "Sphynx",
+          age: 2,
+          description: "Distinctive, affectionate and with a unique look.",
+          price: 380,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1592194996308-6b43878e84a6?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Beagle",
+          type: "Dog",
+          breed: "Beagle",
+          age: 3,
+          description: "Small, energetic and known for its friendly nature.",
+          price: 320,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "German Shepherd",
+          type: "Dog",
+          breed: "German Shepherd",
+          age: 4,
+          description: "Loyal, protective and intelligent—a true working dog.",
+          price: 550,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1568572933382-74d440642117?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Abyssinian Cat",
+          type: "Cat",
+          breed: "Abyssinian",
+          age: 3,
+          description: "Active, playful and with a striking coat pattern.",
+          price: 330,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1583336660823-19f1218b3b2e?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Dutch Rabbit",
+          type: "Rabbit",
+          breed: "Dutch",
+          age: 1,
+          description: "Distinctive markings and a gentle, curious nature.",
+          price: 95,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1598511728255-42cf1fbb1c80?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Flemish Giant Rabbit",
+          type: "Rabbit",
+          breed: "Flemish Giant",
+          age: 2,
+          description: "Huge and gentle—needs plenty of space to roam.",
+          price: 120,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1601758125000-2e3bdb1b45f5?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Crested Guinea Pig",
+          type: "Guinea Pig",
+          breed: "Crested",
+          age: 1,
+          description: "Small, active and with a distinctive crest of hair.",
+          price: 55,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1610917629300-d3cc35647b7a?auto=format&fit=crop&w=300&h=200"
+        },
+        {
+          id: generateId(),
+          title: "Dwarf Rabbit",
+          type: "Rabbit",
+          breed: "Dwarf",
+          age: 1,
+          description: "Compact and adorable with a lively personality.",
+          price: 80,
+          sellerId: "sample_seller",
+          image: "https://images.unsplash.com/photo-1601758125100-2e3bdb1b45f6?auto=format&fit=crop&w=300&h=200"
+        }
       ];
       savePets(sampleListings);
     }
     
-    // Render listings in grid
+    // Render listings grid
     function renderListings() {
-      populateSampleListings(); // populate if empty
+      populateSampleListings();
       const listingsContainer = document.getElementById("listingGrid");
       const listings = getPets();
       listingsContainer.innerHTML = "";
