@@ -40,15 +40,19 @@
       height: 400px;
       overflow: hidden;
     }
-    .slide {
+    .slider .slide {
       position: absolute;
       width: 100%;
       height: 100%;
       opacity: 0;
       transition: opacity 1s ease-in-out;
     }
-    .slide.active { opacity: 1; }
-    .slide img { width: 100%; height: 100%; object-fit: cover; }
+    .slider .slide.active { opacity: 1; }
+    .slider .slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
     
     /* Main content */
     main { padding: 20px; }
@@ -85,7 +89,11 @@
       font-weight: bold;
       margin-top: 10px;
     }
-    .listing-info .seller { font-style: italic; margin-top: 5px; font-size: 0.85em; }
+    .listing-info .seller {
+      font-style: italic;
+      margin-top: 5px;
+      font-size: 0.85em;
+    }
     
     /* Detail Page */
     .detail-container {
@@ -355,7 +363,7 @@
           location: e.target.location.value,
           listingNumber: "Listing #" + Math.floor(Math.random()*10000000000),
           sellerId: currentUser.id,
-          // Use a fallback image (a random pet image) if user does not provide one
+          // Use Unsplash search by query for pet type
           image: "https://source.unsplash.com/featured/300x200/?" + encodeURIComponent(e.target.type.value)
         };
         const pets = getPets();
@@ -458,7 +466,7 @@
           id: generateId(),
           title: "Labrador Retriever",
           type: "Dog",
-          breed: "Labrador",
+          breed: "Labrador Retriever",
           age: 4,
           description: "A playful and loving Labrador ready for a new home.",
           price: 650,
@@ -720,7 +728,7 @@
             <h3>${listing.title}</h3>
             <p>${listing.description}</p>
             <p class="price">\$${listing.price}</p>
-            <p class="seller">Seller: ${listing.sellerId === "sample_seller" ? "Saskia's Ark" : listing.sellerId}</p>
+            <p class="seller">Seller: Saskia's Ark</p>
           </div>
         `;
         card.addEventListener("click", () => {
