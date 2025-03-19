@@ -1,12 +1,291 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Pet </title>
-  </head>
-  <body>
-    <div id="root"></div>
-  </body>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Pet TradeMe</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+    header { background: #0073e6; color: white; padding: 10px; }
+    header h1 { margin: 0; }
+    nav a { color: white; margin-right: 10px; text-decoration: none; }
+    nav button { margin-left: 10px; }
+    main { margin-top: 20px; }
+    form { max-width: 400px; }
+    form label { display: block; margin-bottom: 10px; }
+    form input, form textarea { width: 100%; padding: 5px; margin-top: 5px; }
+    ul { list-style: none; padding: 0; }
+    ul li { margin-bottom: 5px; }
+    img { border: 1px solid #ccc; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Pet TradeMe</h1>
+    <nav>
+      <a href="#home">Home</a> | 
+      <a href="#sell">Sell a Pet</a> | 
+      <a href="#upload">Super Buyer Upload</a> | 
+      <a href="#login" id="loginLink">Login</a> | 
+      <a href="#register" id="registerLink">Register</a>
+      <button id="logoutBtn" style="display:none;">Logout</button>
+    </nav>
+  </header>
+  <main>
+    <div id="content"></div>
+  </main>
+
+  <script>
+    // Utility functions for localStorage persistence
+    function getUsers() {
+      return JSON.parse(localStorage.getItem("users") || "[]");
+    }
+    function saveUsers(users) {
+      localStorage.setItem("users", JSON.stringify(users));
+    }
+    function getPets() {
+      return JSON.parse(localStorage.getItem("pets") || "[]");
+    }
+    function savePets(pets) {
+      localStorage.setItem("pets", JSON.stringify(pets));
+    }
+    function getCurrentUser() {
+      const userId = localStorage.getItem("currentUser");
+      if (!userId) return null;
+      return getUsers().find(u => u.id === userId);
+    }
+    function setCurrentUser(userId) {
+      localStorage.setItem("currentUser", userId);
+    }
+    function clearCurrentUser() {
+      localStorage.removeItem("currentUser");
+    }
+    // Simple ID generator
+    function generateId() {
+      return '_' + Math.random().toString(36).substr(2, 9);
+    }
+    
+    // Main render function based on hash-based routing
+    function render() {
+      const hash = window.location.hash || "#home";
+      const content = document.getElementById("content");
+      content.innerHTML = "";
+      
+      updateNav();
+      
+      if (hash === "#home") {
+        renderHome();
+      } else if (hash === "#login") {
+        renderLogin();
+      } else if (hash === "#register") {
+        renderRegister();
+      } else if (hash === "#sell") {
+        renderSellPet();
+      } else if (hash === "#upload") {
+        renderUpload();
+      } else if (hash.startsWith("#pet-")) {
+        const petId = hash.slice(5);
+        renderPetDetail(petId);
+      } else {
+        content.innerHTML = "<p>Page not found</p>";
+      }
+    }
+    
+    // Update navigation links based on login status
+    function updateNav() {
+      const currentUser = getCurrentUser();
+      document.getElementById("loginLink").style.display = currentUser ? "none" : "inline";
+      document.getElementById("registerLink").style.display = currentUser ? "none" : "inline";
+      document.getElementById("logoutBtn").style.display = currentUser ? "inline" : "none";
+    }
+    
+    document.getElementById("logoutBtn").addEventListener("click", () => {
+      clearCurrentUser();
+      window.location.hash = "#home";
+      render();
+    });
+    
+    // Render Home: List all pet listings
+    function renderHome() {
+      const content = document.getElementById("content");
+      const pets = getPets();
+      let html = "<h2>Pets for Sale</h2>";
+      if (pets.length === 0) {
+        html += "<p>No pets available.</p>";
+      } else {
+        html += "<ul>";
+        pets.forEach(pet => {
+          html += `<li><a href="#pet-${pet.id}">${pet.name} - ${pet.type}</a></li>`;
+        });
+        html += "</ul>";
+      }
+      content.innerHTML = html;
+    }
+    
+    // Render Login form
+    function renderLogin() {
+      const content = document.getElementById("content");
+      content.innerHTML = `
+        <h2>Login</h2>
+        <form id="loginForm">
+          <label>Email: <input type="email" name="email" required /></label>
+          <label>Password: <input type="password" name="password" required /></label>
+          <button type="submit">Login</button>
+        </form>
+        <div id="loginError" style="color:red;"></div>
+      `;
+      document.getElementById("loginForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+        const users = getUsers();
+        const user = users.find(u => u.email === email && u.password === password);
+        if (user) {
+          setCurrentUser(user.id);
+          window.location.hash = "#home";
+          render();
+        } else {
+          document.getElementById("loginError").innerText = "Invalid credentials";
+        }
+      });
+    }
+    
+    // Render Registration form
+    function renderRegister() {
+      const content = document.getElementById("content");
+      content.innerHTML = `
+        <h2>Register</h2>
+        <form id="registerForm">
+          <label>Username: <input type="text" name="username" required /></label>
+          <label>Email: <input type="email" name="email" required /></label>
+          <label>Password: <input type="password" name="password" required /></label>
+          <button type="submit">Register</button>
+        </form>
+        <div id="registerError" style="color:red;"></div>
+      `;
+      document.getElementById("registerForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const username = e.target.username.value;
+        const email = e.target.email.value;
+        const password = e.target.password.value;
+        const users = getUsers();
+        if (users.find(u => u.email === email)) {
+          document.getElementById("registerError").innerText = "User already exists";
+          return;
+        }
+        const newUser = { id: generateId(), username, email, password, superBuyer: false, propertyPhoto: null };
+        users.push(newUser);
+        saveUsers(users);
+        setCurrentUser(newUser.id);
+        window.location.hash = "#home";
+        render();
+      });
+    }
+    
+    // Render the form to sell (list) a pet
+    function renderSellPet() {
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        window.location.hash = "#login";
+        render();
+        return;
+      }
+      const content = document.getElementById("content");
+      content.innerHTML = `
+        <h2>Sell a Pet</h2>
+        <form id="sellForm">
+          <label>Name: <input type="text" name="name" required /></label>
+          <label>Type: <input type="text" name="type" required /></label>
+          <label>Breed: <input type="text" name="breed" /></label>
+          <label>Age: <input type="number" name="age" /></label>
+          <label>Description:<br/><textarea name="description"></textarea></label>
+          <label>Price: <input type="number" name="price" required /></label>
+          <button type="submit">Create Listing</button>
+        </form>
+        <div id="sellError" style="color:red;"></div>
+      `;
+      document.getElementById("sellForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const pet = {
+          id: generateId(),
+          name: e.target.name.value,
+          type: e.target.type.value,
+          breed: e.target.breed.value,
+          age: e.target.age.value,
+          description: e.target.description.value,
+          price: e.target.price.value,
+          sellerId: currentUser.id
+        };
+        const pets = getPets();
+        pets.push(pet);
+        savePets(pets);
+        window.location.hash = "#home";
+        render();
+      });
+    }
+    
+    // Render the Super Buyer upload page
+    function renderUpload() {
+      const currentUser = getCurrentUser();
+      if (!currentUser) {
+        window.location.hash = "#login";
+        render();
+        return;
+      }
+      const content = document.getElementById("content");
+      content.innerHTML = `
+        <h2>Super Buyer Qualification</h2>
+        <p>Upload a photo of your property so sellers can see where the pet will be going.</p>
+        <form id="uploadForm">
+          <input type="file" name="photo" accept="image/*" required /><br/>
+          <button type="submit">Upload Photo</button>
+        </form>
+        <div id="uploadMsg"></div>
+      `;
+      document.getElementById("uploadForm").addEventListener("submit", (e) => {
+        e.preventDefault();
+        const fileInput = e.target.photo;
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          let users = getUsers();
+          const userIndex = users.findIndex(u => u.id === currentUser.id);
+          if (userIndex !== -1) {
+            users[userIndex].propertyPhoto = event.target.result;
+            users[userIndex].superBuyer = true;
+            saveUsers(users);
+            document.getElementById("uploadMsg").innerText = "Upload successful! You are now a Super Buyer.";
+          }
+        }
+        reader.readAsDataURL(file);
+      });
+    }
+    
+    // Render pet detail view
+    function renderPetDetail(petId) {
+      const content = document.getElementById("content");
+      const pets = getPets();
+      const pet = pets.find(p => p.id === petId);
+      if (!pet) {
+        content.innerHTML = "<p>Pet not found.</p>";
+        return;
+      }
+      const users = getUsers();
+      const seller = users.find(u => u.id === pet.sellerId);
+      content.innerHTML = `
+        <h2>${pet.name}</h2>
+        <p>Type: ${pet.type}</p>
+        <p>Breed: ${pet.breed}</p>
+        <p>Age: ${pet.age}</p>
+        <p>Description: ${pet.description}</p>
+        <p>Price: \$${pet.price}</p>
+        <p>Seller: ${seller ? seller.username : "Unknown"}</p>
+        ${seller && seller.superBuyer && seller.propertyPhoto ? `<img src="${seller.propertyPhoto}" alt="Seller Property" style="max-width:300px;"/>` : ''}
+        <p><a href="#home">Back to List</a></p>
+      `;
+    }
+    
+    window.addEventListener("hashchange", render);
+    render();
+  </script>
+</body>
 </html>
