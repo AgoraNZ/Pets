@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Saskia's Ark - Modern Marketplace</title>
+  <title>Saskia's Ark - Modern Pet Marketplace</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* Base styles */
+    /* Base Reset & Fonts */
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Roboto', sans-serif; background: #f2f2f2; color: #333; }
     a { text-decoration: none; color: inherit; }
@@ -85,11 +85,7 @@
       font-weight: bold;
       margin-top: 10px;
     }
-    .listing-info .seller {
-      font-style: italic;
-      margin-top: 5px;
-      font-size: 0.85em;
-    }
+    .listing-info .seller { font-style: italic; margin-top: 5px; font-size: 0.85em; }
     
     /* Detail Page */
     .detail-container {
@@ -107,6 +103,8 @@
       border-bottom: 1px solid #ddd;
       margin-bottom: 20px;
     }
+    .detail-info { margin-bottom: 15px; }
+    .detail-info p { margin: 5px 0; }
     .ask-btn {
       background: #0073e6;
       color: #fff;
@@ -172,7 +170,7 @@
   </main>
   
   <footer>
-    &copy; 2025 Pet TradeMe. All rights reserved.
+    &copy; 2025 Saskia's Ark. All rights reserved.
   </footer>
   
   <script>
@@ -339,7 +337,7 @@
           <label>Age: <input type="number" name="age"></label>
           <label>Description:<br><textarea name="description"></textarea></label>
           <label>Price: <input type="number" name="price" required></label>
-          <!-- For simplicity, seller image is pre-populated in sample listings -->
+          <label>Location: <input type="text" name="location" value="Auckland" required></label>
           <button type="submit">Create Listing</button>
         </form>
         <div id="sellError" style="color:red;"></div>
@@ -354,8 +352,11 @@
           age: e.target.age.value,
           description: e.target.description.value,
           price: e.target.price.value,
+          location: e.target.location.value,
+          listingNumber: "Listing #" + Math.floor(Math.random()*10000000000),
           sellerId: currentUser.id,
-          image: "https://source.unsplash.com/random/300x200" // fallback image
+          // Use a fallback image (a random pet image) if user does not provide one
+          image: "https://source.unsplash.com/featured/300x200/?" + encodeURIComponent(e.target.type.value)
         };
         const pets = getPets();
         pets.push(pet);
@@ -410,24 +411,25 @@
         return;
       }
       const users = getUsers();
-      const seller = users.find(u => u.id === pet.sellerId) || { username: "Sample Seller" };
+      const seller = users.find(u => u.id === pet.sellerId) || { username: "Saskia's Ark" };
       content.innerHTML = `
         <div class="detail-container">
           <img class="detail-image" src="${pet.image || 'https://source.unsplash.com/featured/800x400/?'+pet.type}" alt="${pet.title}">
           <h2>${pet.title}</h2>
-          <p><strong>Type:</strong> ${pet.type}</p>
-          <p><strong>Breed:</strong> ${pet.breed}</p>
-          <p><strong>Age:</strong> ${pet.age}</p>
-          <p><strong>Description:</strong> ${pet.description}</p>
-          <p class="price"><strong>Price:</strong> \$${pet.price}</p>
-          <p class="seller"><strong>Seller:</strong> ${seller.username}</p>
+          <div class="detail-info"><p><strong>Type:</strong> ${pet.type}</p></div>
+          <div class="detail-info"><p><strong>Breed:</strong> ${pet.breed}</p></div>
+          <div class="detail-info"><p><strong>Age:</strong> ${pet.age}</p></div>
+          <div class="detail-info"><p><strong>Description:</strong> ${pet.description}</p></div>
+          <div class="detail-info"><p class="price"><strong>Price:</strong> \$${pet.price}</p></div>
+          <div class="detail-info"><p><strong>Location:</strong> ${pet.location}</p></div>
+          <div class="detail-info"><p><strong>Listing Number:</strong> ${pet.listingNumber}</p></div>
+          <div class="detail-info"><p class="seller"><strong>Seller:</strong> ${seller.username}</p></div>
           <button class="ask-btn" onclick="askSeller('${seller.username}')">Ask Seller a Question</button>
           <p><a href="#home">Back to Listings</a></p>
         </div>
       `;
     }
     
-    // Simulate asking seller a question
     function askSeller(sellerName) {
       const question = prompt("Enter your question for " + sellerName + ":");
       if (question) {
@@ -445,8 +447,10 @@
           type: "Dog",
           breed: "Golden Retriever",
           age: 3,
-          description: "Friendly, loyal and energetic. Perfect for families.",
+          description: "Friendly, loyal and energetic. A perfect family companion.",
           price: 600,
+          location: "Auckland",
+          listingNumber: "Listing #5223175989",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1558788353-f76d92427f16?auto=format&fit=crop&w=300&h=200"
         },
@@ -456,8 +460,10 @@
           type: "Dog",
           breed: "Labrador",
           age: 4,
-          description: "Labrador with a playful spirit and gentle nature.",
+          description: "A playful and loving Labrador ready for a new home.",
           price: 650,
+          location: "Auckland",
+          listingNumber: "Listing #5223175990",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1573694847310-c0f7bb1aa744?auto=format&fit=crop&w=300&h=200"
         },
@@ -467,8 +473,10 @@
           type: "Cat",
           breed: "Siamese",
           age: 2,
-          description: "Elegant and talkative, a charming companion.",
+          description: "Elegant and vocal, this Siamese cat is a charming companion.",
           price: 300,
+          location: "Auckland",
+          listingNumber: "Listing #5223175991",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1592194996308-7b43878e84a6?auto=format&fit=crop&w=300&h=200"
         },
@@ -478,8 +486,10 @@
           type: "Cat",
           breed: "Persian",
           age: 3,
-          description: "Fluffy, calm, and affectionate—ideal for indoor living.",
+          description: "Fluffy and affectionate with a regal demeanor.",
           price: 350,
+          location: "Auckland",
+          listingNumber: "Listing #5223175992",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1601758124327-2b3bdb1b45b4?auto=format&fit=crop&w=300&h=200"
         },
@@ -489,8 +499,10 @@
           type: "Cat",
           breed: "British Shorthair",
           age: 3,
-          description: "Calm, loyal and independent with a plush coat.",
+          description: "Calm and affectionate with a plush, dense coat.",
           price: 320,
+          location: "Auckland",
+          listingNumber: "Listing #5223175993",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1560114924-ef19c34a30c3?auto=format&fit=crop&w=300&h=200"
         },
@@ -500,8 +512,10 @@
           type: "Rabbit",
           breed: "Rex",
           age: 1,
-          description: "Soft and cuddly, perfect for petting and playtime.",
+          description: "Soft-furred and gentle, ideal for petting.",
           price: 90,
+          location: "Auckland",
+          listingNumber: "Listing #5223175994",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1598511728182-27d7f90345f9?auto=format&fit=crop&w=300&h=200"
         },
@@ -513,6 +527,8 @@
           age: 1,
           description: "Adorable lop-eared rabbit with a sweet temperament.",
           price: 85,
+          location: "Auckland",
+          listingNumber: "Listing #5223175995",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1612817150060-6ec8cc4d89e4?auto=format&fit=crop&w=300&h=200"
         },
@@ -522,10 +538,12 @@
           type: "Guinea Pig",
           breed: "Netherland Dwarf",
           age: 1,
-          description: "Small, energetic and perfect for first-time owners.",
+          description: "Small, energetic and perfect for a first pet.",
           price: 45,
+          location: "Auckland",
+          listingNumber: "Listing #5223175996",
           sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1610917629193-b3cc35647b5e?auto=format&fit=crop&w=300&h=200"
+          image: "https://images.unsplash.com/photo-1581306503942-7a81f23f1a50?auto=format&fit=crop&w=300&h=200"
         },
         {
           id: generateId(),
@@ -533,10 +551,12 @@
           type: "Guinea Pig",
           breed: "American",
           age: 1,
-          description: "Friendly and curious with a soft, cuddly coat.",
+          description: "Friendly and cuddly with a soft coat.",
           price: 50,
+          location: "Auckland",
+          listingNumber: "Listing #5223175997",
           sellerId: "sample_seller",
-          image: "https://images.unsplash.com/photo-1610917629200-c3cc35647b6f?auto=format&fit=crop&w=300&h=200"
+          image: "https://images.unsplash.com/photo-1581306503942-7a81f23f1a51?auto=format&fit=crop&w=300&h=200"
         },
         {
           id: generateId(),
@@ -544,8 +564,10 @@
           type: "Dog",
           breed: "Border Collie",
           age: 2,
-          description: "Smart, energetic and ideal for active families.",
+          description: "Intelligent and energetic—ideal for active families.",
           price: 500,
+          location: "Auckland",
+          listingNumber: "Listing #5223175998",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1598133894002-28390ff9e888?auto=format&fit=crop&w=300&h=200"
         },
@@ -555,8 +577,10 @@
           type: "Dog",
           breed: "Bulldog",
           age: 3,
-          description: "Strong, gentle and with a distinctive personality.",
+          description: "Strong and gentle with a unique, charming personality.",
           price: 450,
+          location: "Auckland",
+          listingNumber: "Listing #5223175999",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1583511655612-b72f8a3f6e9a?auto=format&fit=crop&w=300&h=200"
         },
@@ -566,8 +590,10 @@
           type: "Cat",
           breed: "Maine Coon",
           age: 4,
-          description: "Large, majestic and known for its friendly nature.",
+          description: "Large, majestic and very friendly.",
           price: 400,
+          location: "Auckland",
+          listingNumber: "Listing #5223176000",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1592194996308-5b43878e84a6?auto=format&fit=crop&w=300&h=200"
         },
@@ -577,8 +603,10 @@
           type: "Cat",
           breed: "Sphynx",
           age: 2,
-          description: "Distinctive, affectionate and with a unique look.",
+          description: "Unique, affectionate and with a striking appearance.",
           price: 380,
+          location: "Auckland",
+          listingNumber: "Listing #5223176001",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1592194996308-6b43878e84a6?auto=format&fit=crop&w=300&h=200"
         },
@@ -590,6 +618,8 @@
           age: 3,
           description: "Small, energetic and known for its friendly nature.",
           price: 320,
+          location: "Auckland",
+          listingNumber: "Listing #5223176002",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1575936123452-b67c3203c357?auto=format&fit=crop&w=300&h=200"
         },
@@ -601,6 +631,8 @@
           age: 4,
           description: "Loyal, protective and intelligent—a true working dog.",
           price: 550,
+          location: "Auckland",
+          listingNumber: "Listing #5223176003",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1568572933382-74d440642117?auto=format&fit=crop&w=300&h=200"
         },
@@ -612,6 +644,8 @@
           age: 3,
           description: "Active, playful and with a striking coat pattern.",
           price: 330,
+          location: "Auckland",
+          listingNumber: "Listing #5223176004",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1583336660823-19f1218b3b2e?auto=format&fit=crop&w=300&h=200"
         },
@@ -623,6 +657,8 @@
           age: 1,
           description: "Distinctive markings and a gentle, curious nature.",
           price: 95,
+          location: "Auckland",
+          listingNumber: "Listing #5223176005",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1598511728255-42cf1fbb1c80?auto=format&fit=crop&w=300&h=200"
         },
@@ -634,6 +670,8 @@
           age: 2,
           description: "Huge and gentle—needs plenty of space to roam.",
           price: 120,
+          location: "Auckland",
+          listingNumber: "Listing #5223176006",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1601758125000-2e3bdb1b45f5?auto=format&fit=crop&w=300&h=200"
         },
@@ -643,8 +681,10 @@
           type: "Guinea Pig",
           breed: "Crested",
           age: 1,
-          description: "Small, active and with a distinctive crest of hair.",
+          description: "Active and with a distinctive crest of hair.",
           price: 55,
+          location: "Auckland",
+          listingNumber: "Listing #5223176007",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1610917629300-d3cc35647b7a?auto=format&fit=crop&w=300&h=200"
         },
@@ -656,6 +696,8 @@
           age: 1,
           description: "Compact and adorable with a lively personality.",
           price: 80,
+          location: "Auckland",
+          listingNumber: "Listing #5223176008",
           sellerId: "sample_seller",
           image: "https://images.unsplash.com/photo-1601758125100-2e3bdb1b45f6?auto=format&fit=crop&w=300&h=200"
         }
@@ -678,7 +720,7 @@
             <h3>${listing.title}</h3>
             <p>${listing.description}</p>
             <p class="price">\$${listing.price}</p>
-            <p class="seller">Seller: ${listing.sellerId}</p>
+            <p class="seller">Seller: ${listing.sellerId === "sample_seller" ? "Saskia's Ark" : listing.sellerId}</p>
           </div>
         `;
         card.addEventListener("click", () => {
